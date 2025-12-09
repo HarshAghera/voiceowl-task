@@ -1,10 +1,16 @@
 import mongoose from "mongoose";
-import { MONGO_URI } from "../config/env";
+import { MongoMemoryServer } from "mongodb-memory-server";
+
+let mongoServer: MongoMemoryServer | null = null;
 
 export async function connectDB(): Promise<void> {
   try {
-    await mongoose.connect(MONGO_URI, {} as mongoose.ConnectOptions);
-    console.log("MongoDB connected");
+    mongoServer = await MongoMemoryServer.create();
+    const uri = mongoServer.getUri();
+
+    await mongoose.connect(uri);
+
+    console.log("✔ Connected to MongoDB In-Memory Server");
   } catch (err) {
     console.error("MongoDB connection error:", err);
     throw err;
@@ -13,4 +19,9 @@ export async function connectDB(): Promise<void> {
 
 export async function disconnectDB(): Promise<void> {
   await mongoose.disconnect();
+
+  if (mongoServer) {
+    await mongoServer.stop();
+    console.log("In-Memory MongoDB Server stopped");
+  }
 }

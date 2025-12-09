@@ -1,0 +1,13 @@
+### Variables
+@baseUrl = http://localhost:3000/api
+
+### 1. Create a new Transcription
+POST {{baseUrl}}/transcription
+Content-Type: application/json
+
+{
+  "audioUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+}
+
+### 2. List Transcriptions (Last 30 days)
+GET {{baseUrl}}/transcriptions
