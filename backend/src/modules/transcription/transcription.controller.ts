@@ -8,26 +8,46 @@ export class TranscriptionController {
     try {
       const { audioUrl } = req.body;
       if (!audioUrl || typeof audioUrl !== 'string') {
-        return res
-          .status(400)
-          .json({ error: 'audioUrl is required and must be a string' });
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid request',
+          error: 'audioUrl is required and must be a string',
+        });
       }
 
       const doc = await transcriptionService.create(audioUrl);
-      return res.status(201).json({ id: doc._id });
+
+      return res.status(201).json({
+        success: true,
+        message: 'Transcription created successfully',
+        data: { id: doc._id },
+      });
     } catch (err: any) {
       console.error('create transcription error:', err?.message ?? err);
-      return res.status(500).json({ error: 'Internal server error' });
+      return res.status(500).json({
+        success: false,
+        message: 'Internal server error',
+        error: err?.message ?? 'Something went wrong',
+      });
     }
   }
 
   async list(req: Request, res: Response) {
     try {
       const items = await transcriptionService.list();
-      return res.json({ items });
-    } catch (err) {
+
+      return res.json({
+        success: true,
+        message: 'Transcription list fetched successfully',
+        data: { items },
+      });
+    } catch (err: any) {
       console.error('list transcriptions error:', err);
-      return res.status(500).json({ error: 'Internal server error' });
+      return res.status(500).json({
+        success: false,
+        message: 'Internal server error',
+        error: err?.message ?? 'Something went wrong',
+      });
     }
   }
 
@@ -35,17 +55,30 @@ export class TranscriptionController {
     try {
       const { audioUrl, language } = req.body ?? {};
       if (!audioUrl || typeof audioUrl !== 'string') {
-        return res.status(400).json({ error: 'audioUrl required' });
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid request',
+          error: 'audioUrl is required',
+        });
       }
+
       const lang = typeof language === 'string' ? language : 'en-US';
 
       const result = await transcriptionService.transcribeAzure(audioUrl, lang);
-      return res.status(201).json({ transcription: result.text });
+
+      return res.status(201).json({
+        success: true,
+        message: 'Azure transcription successful',
+        data: { transcription: result.text },
+      });
     } catch (err: any) {
       console.error('azure transcription error:', err?.message ?? err);
-      return res
-        .status(500)
-        .json({ error: 'Azure transcription failed', details: err?.message });
+
+      return res.status(500).json({
+        success: false,
+        message: 'Azure transcription failed',
+        error: err?.message ?? 'Unknown error',
+      });
     }
   }
 }
