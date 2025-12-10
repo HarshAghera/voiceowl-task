@@ -21,6 +21,6 @@ POST http://localhost:3000/api/azure-transcription
 Content-Type: application/json
 
 {
-"audioUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+"audioUrl": "https://dare.wisc.edu/wp-content/uploads/sites/1051/2008/04/Arthur.mp3",
 "language": "en-US"
 }
